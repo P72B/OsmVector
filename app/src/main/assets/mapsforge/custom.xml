@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rendertheme xmlns="http://mapsforge.org/renderTheme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://mapsforge.org/renderTheme renderTheme.xsd" version="1">
+
+    <!-- matches all ways with a "highway=trunk" or a "highway=motorway" tag -->
+    <rule e="way" k="highway" v="trunk|motorway">
+        <line stroke="#FF9900" stroke-width="2.5" />
+    </rule>
+
+    <!-- matches all closed ways (first node equals last node) with an "amenity=…" tag -->
+    <rule e="way" k="amenity" v="*" closed="yes">
+        <area fill="#DDEECC" stroke="#006699" stroke-width="0.3" />
+    </rule>
+
+    <!-- matches all nodes with a "tourism=hotel" tag on zoom level 16 and above -->
+    <rule e="node" k="tourism" v="hotel" zoom-min="16">
+        <symbol src="file:/path/to/symbol/icon/hotel.png" />
+        <caption k="name" font-style="bold" font-size="10" fill="#4040ff" />
+    </rule>
+</rendertheme>
