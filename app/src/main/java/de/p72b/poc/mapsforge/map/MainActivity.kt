@@ -13,6 +13,7 @@ import de.p72b.poc.mapsforge.map.MainViewModel.ViewAction.OpenMap
 import de.p72b.poc.mapsforge.map.MainViewModel.ViewAction.ShowMessage
 import org.oscim.android.MapView
 import org.oscim.backend.CanvasAdapter
+import org.oscim.core.MapPosition
 import org.oscim.layers.tile.buildings.BuildingLayer
 import org.oscim.layers.tile.vector.VectorTileLayer
 import org.oscim.layers.tile.vector.labeling.LabelLayer
@@ -63,20 +64,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun openMap(uri: Uri) {
         try {
-            // Tile source
             val tileSource = MapFileTileSource()
             tileSource.setMapFile(uri.path)
 
-            // Vector layer
             val tileLayer: VectorTileLayer = mapView.map().setBaseMap(tileSource)
-
-            // Building layer
             mapView.map().layers().add(BuildingLayer(mapView.map(), tileLayer))
-
-            // Label layer
             mapView.map().layers().add(LabelLayer(mapView.map(), tileLayer))
-
-            // Render theme
             mapView.map().setTheme(VtmThemes.DEFAULT)
 
             // Scale bar
@@ -85,13 +78,9 @@ class MainActivity : AppCompatActivity() {
             mapScaleBarLayer.renderer.setPosition(GLViewport.Position.BOTTOM_LEFT)
             mapScaleBarLayer.renderer.setOffset(5 * CanvasAdapter.getScale(), 0f)
             mapView.map().layers().add(mapScaleBarLayer)
-
-            // Note: this map position is specific to Berlin area
-            mapView.map().setMapPosition(52.52629378878745, 13.41604471206665, 12.0)
+            val mapPosition = MapPosition(52.52629378878745, 13.41604471206665, (1 shl 12).toDouble())
+            mapView.map().mapPosition = mapPosition
         } catch (e: java.lang.Exception) {
-            /*
-             * In case of map file errors avoid crash, but developers should handle these cases!
-             */
             e.printStackTrace()
         }
     }
