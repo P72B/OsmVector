@@ -42,6 +42,10 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.6'
 
-    implementation 'org.mapsforge:mapsforge-map-android:0.14.0'
-    //implementation 'org.mapsforge:mapsforge-themes:0.14.0'
+    implementation "org.mapsforge:vtm-android:$mapsforge_version"
+    implementation "org.mapsforge:vtm-android:$mapsforge_version:natives-armeabi-v7a"
+    implementation "org.mapsforge:vtm-android:$mapsforge_version:natives-arm64-v8a"
+    implementation "org.mapsforge:vtm-android:$mapsforge_version:natives-x86"
+    implementation "org.mapsforge:vtm-android:$mapsforge_version:natives-x86_64"
+    implementation "com.caverock:androidsvg:1.4"
 }

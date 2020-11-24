@@ -52,7 +52,7 @@
             app:layout_constraintStart_toEndOf="@+id/cta_download_map_file"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <org.mapsforge.map.android.view.MapView
+        <org.oscim.android.MapView
             android:id="@+id/mapView"
             android:layout_height="0dp"
             android:layout_width="0dp"

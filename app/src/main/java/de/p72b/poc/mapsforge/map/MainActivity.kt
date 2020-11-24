@@ -11,14 +11,16 @@ import de.p72b.poc.mapsforge.R
 import de.p72b.poc.mapsforge.databinding.ActivityMainBinding
 import de.p72b.poc.mapsforge.map.MainViewModel.ViewAction.OpenMap
 import de.p72b.poc.mapsforge.map.MainViewModel.ViewAction.ShowMessage
-import org.mapsforge.core.model.LatLong
-import org.mapsforge.map.android.graphics.AndroidGraphicFactory
-import org.mapsforge.map.android.util.AndroidUtil
-import org.mapsforge.map.android.view.MapView
-import org.mapsforge.map.datastore.MapDataStore
-import org.mapsforge.map.layer.renderer.TileRendererLayer
-import org.mapsforge.map.reader.MapFile
-import java.io.FileInputStream
+import org.oscim.android.MapView
+import org.oscim.backend.CanvasAdapter
+import org.oscim.layers.tile.buildings.BuildingLayer
+import org.oscim.layers.tile.vector.VectorTileLayer
+import org.oscim.layers.tile.vector.labeling.LabelLayer
+import org.oscim.renderer.GLViewport
+import org.oscim.scalebar.DefaultMapScaleBar
+import org.oscim.scalebar.MapScaleBar
+import org.oscim.scalebar.MapScaleBarLayer
+import org.oscim.tiling.source.mapfile.MapFileTileSource
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -41,40 +43,55 @@ class MainActivity : AppCompatActivity() {
                 is OpenMap -> openMap(it.uri)
             }
         })
-
-
-        AndroidGraphicFactory.createInstance(application)
         mapView = findViewById<View>(R.id.mapView) as MapView
     }
 
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+    }
+
+    override fun onPause() {
+        mapView.onPause()
+        super.onPause()
+    }
+
     override fun onDestroy() {
-        mapView.destroyAll()
-        AndroidGraphicFactory.clearResourceMemoryCache()
+        mapView.onDestroy()
         super.onDestroy()
     }
 
     private fun openMap(uri: Uri) {
         try {
-            mapView.mapScaleBar.isVisible = true
-            mapView.setBuiltInZoomControls(true)
-            val tileCache = AndroidUtil.createTileCache(
-                this, "mapcache",
-                mapView.model.displayModel.tileSize, 1f,
-                mapView.model.frameBufferModel.overdrawFactor
-            )
-            val fis = contentResolver.openInputStream(uri) as FileInputStream?
-            val mapDataStore: MapDataStore = MapFile(fis, 0L, null)
-            val tileRendererLayer = TileRendererLayer(
-                tileCache, mapDataStore,
-                mapView.model.mapViewPosition, AndroidGraphicFactory.INSTANCE
-            )
-            tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.CUSTOM)
+            // Tile source
+            val tileSource = MapFileTileSource()
+            tileSource.setMapFile(uri.path)
 
-            mapView.layerManager.layers.add(tileRendererLayer)
+            // Vector layer
+            val tileLayer: VectorTileLayer = mapView.map().setBaseMap(tileSource)
 
-            mapView.setCenter(LatLong(52.52629378878745, 13.41604471206665))
-            mapView.setZoomLevel(12.toByte())
-        } catch (e: Exception) {
+            // Building layer
+            mapView.map().layers().add(BuildingLayer(mapView.map(), tileLayer))
+
+            // Label layer
+            mapView.map().layers().add(LabelLayer(mapView.map(), tileLayer))
+
+            // Render theme
+            mapView.map().setTheme(VtmThemes.DEFAULT)
+
+            // Scale bar
+            val mapScaleBar: MapScaleBar = DefaultMapScaleBar(mapView.map())
+            val mapScaleBarLayer = MapScaleBarLayer(mapView.map(), mapScaleBar)
+            mapScaleBarLayer.renderer.setPosition(GLViewport.Position.BOTTOM_LEFT)
+            mapScaleBarLayer.renderer.setOffset(5 * CanvasAdapter.getScale(), 0f)
+            mapView.map().layers().add(mapScaleBarLayer)
+
+            // Note: this map position is specific to Berlin area
+            mapView.map().setMapPosition(52.52629378878745, 13.41604471206665, 12.0)
+        } catch (e: java.lang.Exception) {
+            /*
+             * In case of map file errors avoid crash, but developers should handle these cases!
+             */
             e.printStackTrace()
         }
     }
