@@ -8,7 +8,12 @@ import java.io.InputStream
 
 
 enum class VtmThemes(private val mPath: String) : ThemeFile {
-    DEFAULT("mapsforge/custom.xml");
+    CUSTOM("mapsforge/custom.xml"),
+    DEFAULT("mapsforge/default.xml"),
+    NEWTRON("mapsforge/newtron.xml"),
+    OSMAGRAY("mapsforge/osmagray.xml"),
+    OSMARENDER("mapsforge/osmarender.xml"),
+    TRONRENDER("mapsforge/tronrender.xml");
 
     override fun getMenuCallback(): XmlRenderThemeMenuCallback? {
         return null

@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
             val tileLayer: VectorTileLayer = mapView.map().setBaseMap(tileSource)
             mapView.map().layers().add(BuildingLayer(mapView.map(), tileLayer))
             mapView.map().layers().add(LabelLayer(mapView.map(), tileLayer))
-            mapView.map().setTheme(VtmThemes.DEFAULT)
+            mapView.map().setTheme(VtmThemes.OSMARENDER)
 
             // Scale bar
             val mapScaleBar: MapScaleBar = DefaultMapScaleBar(mapView.map())
